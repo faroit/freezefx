@@ -1,5 +1,7 @@
 """BURG method of AR model estimate
 
+This source code is taken from the https://github.com/cokelaer/spectrum package
+
 .. topic:: This module provides BURG method and BURG PSD estimate
 
     .. autosummary::

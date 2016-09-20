@@ -46,13 +46,15 @@ def ar_filter_offline(
     outBuffer = np.zeros(dur, np.float)
 
     # filter identification
-    a = np.real(burg._arburg2(samples[pos - ns - 1:pos], n)[0])
+    a = np.real(
+        burg._arburg2(samples[pos - ns - 1:pos], n)[0]
+    )
 
     # compute initial filter states
-    z = scipy.signal.lfiltic([1], a, samples[pos-(np.arange(1, n+1))])
+    z = scipy.signal.lfiltic([1.0], a, samples[pos-(np.arange(1, n+1))])
 
     outBuffer, z = scipy.signal.lfilter(
-        [1], a, np.zeros(dur, np.float), zi=z
+        [1.0], a, np.zeros(dur, np.float), zi=z
     )
 
     return outBuffer
@@ -96,8 +98,6 @@ if __name__ == "__main__":
         help='Duration of extrapolation in samples')
 
     args = parser.parse_args()
-
-    write_warped_wavs = False
 
     samples, rate = sf.read(args.input, always_2d=True)
     samples = np.squeeze(np.mean(samples, axis=1))

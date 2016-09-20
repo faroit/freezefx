@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.io.wavfile
 import scipy.signal
-import modules.extern.fastburg as burg
+import fastburg as burg
 import soundfile as sf
 import argparse
 
@@ -102,14 +102,12 @@ if __name__ == "__main__":
     samples, rate = sf.read(args.input, always_2d=True)
     samples = np.squeeze(np.mean(samples, axis=1))
 
-    xpos = args.x
-
     out = extrapolate(
         samples,
-        pos=xpos,
+        pos=args.x,
         dur=args.d,
         n_signal=args.n,
         ns_signal=args.n,
         rate=rate,
     )
-    sf.write(out, args.output, samplerate=rate)
+    sf.write(args.output, out, samplerate=rate)

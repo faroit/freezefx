@@ -1,4 +1,4 @@
-# pyfreeze 
+# FreezeFX 
 
 ![screen shot 2016-09-21 at 15 30 05](https://cloud.githubusercontent.com/assets/72940/18712819/5680c540-8010-11e6-9003-f6d2bfa46485.png)
 

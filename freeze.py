@@ -6,14 +6,88 @@ import soundfile as sf
 import argparse
 
 
+def ar_filter_offline(
+    samples,
+    pos,
+    dur,
+    n=4000,  # AR order
+    ns=4000,  # number of samples to adapat on
+):
+    """`Freezes` signal using AR model and IIR filtering.
+
+    Parameters
+    ----------
+    signal : ndarray, shape (nb_samples,)
+        input signal of `ndim = 1`. Typically a mono audio signal
+    pos : int
+        Freeze position in samples
+    dur : int
+        Number of samples to extrapolate
+    n : int, optional
+        AR model order, defaults to 4000
+    ns : int, optional
+        Number of samples `[pos - ns]` that are used to identify the AR model,
+        defaults to 4000
+
+    Returns
+    -------
+    ndarray, shape=(nb_samples,)
+        Extrapolated samples
+
+    """
+    # create buffer
+    outBuffer = np.zeros(dur, np.float)
+
+    # filter identification
+    a = np.real(
+        burg._arburg2(samples[pos - ns - 1:pos], n)[0]
+    )
+
+    # compute initial filter states
+    z = scipy.signal.lfiltic([1.0], a, samples[pos-(np.arange(1, n+1))])
+
+    outBuffer, z = scipy.signal.lfilter(
+        [1.0], a, np.zeros(dur, np.float), zi=z
+    )
+
+    return outBuffer
+
+
 def ar_filter_block(
     samples,
     pos,
     dur,
-    n=200,  # AR order
-    ns=200,  # number of samples to adapat on
-    nd=1024,  # Buffer length in samples
+    n=200,
+    ns=200,
+    nd=1024,
 ):
+    """`Freezes` signal using AR model and IIR filtering.
+
+    Filtering is realised in a block wise fashion which might reduce
+    computational complexity.
+
+    Parameters
+    ----------
+    signal : ndarray, shape (nb_samples,)
+        input signal of `ndim = 1`. Typically a mono audio signal
+    pos : int
+        Freeze position in samples
+    dur : int
+        Number of samples to extrapolate
+    n : int, optional
+        AR model order, defaults to 200
+    ns : int, optional
+        Number of samples `[pos - ns]` that are used to identify the AR model,
+        defaults to 200
+    nd: int, optional
+        Block size in samples, defaults to 1024
+
+    Returns
+    -------
+    ndarray, shape=(nb_samples,)
+        Extrapolated samples
+
+    """
     # Number of extrapolation blocks in nl * nd
     nl = dur / nd
 
@@ -35,39 +109,36 @@ def ar_filter_block(
     return outBuffer
 
 
-def ar_filter_offline(
-    samples,
-    pos,
-    dur,
-    n=4000,  # AR order
-    ns=4000,  # number of samples to adapat on
-):
-    # create buffer
-    outBuffer = np.zeros(dur, np.float)
-
-    # filter identification
-    a = np.real(
-        burg._arburg2(samples[pos - ns - 1:pos], n)[0]
-    )
-
-    # compute initial filter states
-    z = scipy.signal.lfiltic([1.0], a, samples[pos-(np.arange(1, n+1))])
-
-    outBuffer, z = scipy.signal.lfilter(
-        [1.0], a, np.zeros(dur, np.float), zi=z
-    )
-
-    return outBuffer
-
-
 def extrapolate(
     signal,
     pos,
     dur,
-    rate,
     n_signal=4000,
     ns_signal=4000,
 ):
+    """`Freezes` signal using AR model and IIR filtering.
+    Appends extrapolation to signal
+
+    Parameters
+    ----------
+    signal : ndarray, shape (nb_samples,)
+        input signal of `ndim = 1`. Typically a mono audio signal
+    pos : int
+        Freeze position in samples
+    dur : int
+        Number of samples to extrapolate
+    n_signal : int, optional
+        AR model order, defaults to 4000
+    ns_signal : int, optional
+        Number of samples `[pos - ns]` that are used to identify the AR model,
+        defaults to 4000
+
+    Returns
+    -------
+    ndarray, shape=(nb_samples,)
+        Signal with extrapolated samples concatenated
+
+    """
     concealed = ar_filter_offline(signal, pos, dur, n=n_signal, ns=ns_signal)
 
     return np.concatenate((signal[:pos], concealed))
@@ -108,6 +179,5 @@ if __name__ == "__main__":
         dur=args.d,
         n_signal=args.n,
         ns_signal=args.n,
-        rate=rate,
     )
     sf.write(args.output, out, samplerate=rate)

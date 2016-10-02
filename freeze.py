@@ -117,7 +117,7 @@ def extrapolate(
     ns_signal=4000,
 ):
     """`Freezes` signal using AR model and IIR filtering.
-    Appends extrapolation to signal
+    Appends extrapolation to signal. Uses offline computation
 
     Parameters
     ----------
@@ -139,6 +139,7 @@ def extrapolate(
         Signal with extrapolated samples concatenated
 
     """
+
     concealed = ar_filter_offline(signal, pos, dur, n=n_signal, ns=ns_signal)
 
     return np.concatenate((signal[:pos], concealed))

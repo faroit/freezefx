@@ -24,7 +24,7 @@ Another approach for modeling audio signals, utilizes  autoregressive processes 
 
   ```x(n)= ∑a_k * x(n−k)```
 
-with ```{a_1, a_2, ..., ap}``` being the AR coefficients. The AR coefficients can be identified by system identification algorithms like the Burg algorithm. The basic idea of extrapolating samples in time domain using the AR model is described in [2]. Basically to extrapolate `W` samples based on `ns` past known samples:
+with ```{a_1, a_2, ..., ap}``` being the AR coefficients. The AR coefficients can be identified by system identification algorithms like the Burg algorithm. The basic idea of extrapolating samples in time domain using the AR model is described in [1]. Basically to extrapolate `W` samples based on `ns` past known samples:
 
 * Identify the AR coefficients by using the Burg algorithm
 * Initialize the filter with `ns` past known samples just before the section to be extrapolated
@@ -61,6 +61,4 @@ where
 
 ## References
 
-[1] S. Preihs, F.R. Stöter, and J. Ostermann, “Low delay error concealment for audio signals,” in Audio Engineering Society Conference: 46th International Conference: Audio Forensics, Jun 2012.
-
-[2] I. Kauppinen and K. Roth, “Audio signal extrapolation - theory and applications,” Proc. of the 5th Int. Conference on Digital Audio Effects (DAFx- 02), 2002.
+[1] I. Kauppinen and K. Roth, “Audio signal extrapolation - theory and applications,” Proc. of the 5th Int. Conference on Digital Audio Effects (DAFx- 02), 2002.
